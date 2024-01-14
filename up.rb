@@ -4,20 +4,20 @@
 # up() { cd $(ruby ~/bin/up.rb $@) }
 
 if ARGV.empty?
-    puts ".."
+  puts '..'
 else
-    cwd = File.dirname(Dir.pwd)
-    arg = ARGV[0].downcase
-    
-    while cwd != "/"
-        dir = File.basename(cwd).downcase
-        if dir.include? arg
-            puts cwd
-            break
-        end
-        cwd = File.dirname(cwd)
-    end
+  cwd = File.dirname(Dir.pwd)
+  arg = ARGV[0].downcase
 
-    # Not found.
-    puts Dir.pwd
+  while cwd != '/'
+    dir = File.basename(cwd).downcase
+    if dir.include? arg
+      puts cwd
+      return
+    end
+    cwd = File.dirname(cwd)
+  end
+
+  # Not found.
+  puts Dir.pwd
 end
