@@ -14,7 +14,7 @@ Z_FILE = File.join(ENV['HOME'], '/.z').freeze
 Z_HEADER = 'shnav-z'.freeze
 Z_VERSION = '0.0.1'.freeze
 
-# Add the passed-in dir to the recent-dirs list as the most recent one.
+# Add the passed-in dir to the recent-dirs list as the most recent one (last line of .z).
 def add_dir_to_z_file(dir_to_add)
   # Remove any trailing slashes
   dir_to_add = dir_to_add.chomp('/')
@@ -26,7 +26,10 @@ def add_dir_to_z_file(dir_to_add)
       header = file.gets
       if !header.nil? && header.start_with?(Z_HEADER)
         # Read all lines from .z, removing our dir if it is present.
-        file.each { |line| line=line.chomp; z_dirs.push line if line != dir_to_add }
+        # We add our dir to the end of the file later.
+        z_dirs = file
+          .map { |line| line.chomp }
+          .filter { |line| !line.strip.empty? && line != dir_to_add }
       end
     end
   end

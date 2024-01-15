@@ -10,8 +10,8 @@ else
   arg = ARGV[0].downcase
 
   while cwd != '/'
-    dir = File.basename(cwd).downcase
-    if dir.include? arg
+    base = File.basename(cwd).downcase
+    if base.include? arg
       puts cwd
       return
     end
