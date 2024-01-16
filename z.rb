@@ -14,12 +14,9 @@ Z_FILE = File.join(ENV['HOME'], '/.z').freeze
 Z_HEADER = 'shnav-z'.freeze
 Z_VERSION = '0.0.1'.freeze
 
-# Add the passed-in dir to the recent-dirs list as the most recent one (last line of .z).
-def add_dir_to_z_file(dir_to_add)
-  # Remove any trailing slashes
-  dir_to_add = dir_to_add.chomp('/')
-
+def read_dirs(dir_to_skip)
   z_dirs = []
+
   if File.file?(Z_FILE)
     File.open(Z_FILE, 'r') do |file|
       # Check the header. If it's a .z file created by a different z utility, nuke it.
@@ -29,10 +26,26 @@ def add_dir_to_z_file(dir_to_add)
         # We add our dir to the end of the file later.
         z_dirs = file
           .map { |line| line.chomp }
-          .filter { |line| !line.strip.empty? && line != dir_to_add }
+          .filter { |line| !line.strip.empty? && line != dir_to_skip }
       end
     end
   end
+
+  z_dirs
+end
+
+def print_most_recent_dirs
+  z_dirs = read_dirs Dir.pwd
+
+  z_dirs.reverse.each { |z_dir| puts z_dir }
+end
+
+# Add the passed-in dir to the recent-dirs list as the most recent one (last line of .z).
+def add_dir_to_z_file(dir_to_add)
+  # Remove any trailing slashes
+  dir_to_add = dir_to_add.chomp('/')
+
+  z_dirs = read_dirs dir_to_add
 
   File.open(Z_FILE, "w") do |file|
     file.write "#{Z_HEADER} #{Z_VERSION}\n"
@@ -52,7 +65,7 @@ def change_to_dir_from_fragment(dir_fragment)
 end
 
 if ARGV.empty?
-  # TODO: Display most recent dirs and allow user to select one.
+  print_most_recent_dirs
 elsif ARGV.length == 2 && ARGV[0] == '--add'
   add_dir_to_z_file ARGV[1]
 elsif ARGV.length == 1
