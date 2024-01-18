@@ -5,18 +5,21 @@
 up() { cd "$(ruby "$COMPNAV_DIR/up.rb" "$@")" || return; }
 
 z() {
-  # Start fzf with the first argument, if given, as the query.
+  # Start fzf with any given arguments as the query.
   # Don't show the interactive fzf finder if there's 1 or 0 matches.
   dir=$(ruby "$COMPNAV_DIR/z.rb" | \
-    fzf $([ -n "$1" ] && echo "--query $1") --select-1 --exit-0) &&
+    fzf --query "$*" --select-1 --exit-0) &&
   # Use eval to expand home directory if present.
   cd "$(eval echo "$dir")" || return
 }
 
 h() {
+  query_args=""
+  # Only seed initial query if a repo link is not given.
+  [[ $1 != http* ]] && query_args="$*"
   # See comments on z().
   dir=$(ruby "$COMPNAV_DIR/h.rb" "$COMPNAV_H_REPOS_DIR" "$1" | \
-    fzf $([ -n "$1" ] && echo "--query $1") --select-1 --exit-0) &&
+    fzf --query "$query_args" --select-1 --exit-0) &&
   cd "$(eval echo "$dir")" || return
 }
 
