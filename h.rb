@@ -1,10 +1,10 @@
 # Jump to a repository directory on the system that adheres to the following directory structure:
 #
-# $SHNAV_H_REPOS_DIR/<git-host>/<user>/<repo>
+# $COMPNAV_H_REPOS_DIR/<git-host>/<user>/<repo>
 #
 # For example:
 #
-# ~/Repos/github.com/mrcnski/shnav
+# ~/Repos/github.com/mrcnski/compnav
 #
 # This works by assembling a list of all applicable directories and passing them on (ideally to
 # fzf). If the passed-in argument is a link to a repo, h.rb first clones the repo into the h
@@ -15,7 +15,7 @@ require 'z'
 
 exit if ARGV.length == 0
 
-SHNAV_H_REPOS_DIR=File.expand_path(ARGV[0]).freeze
+COMPNAV_H_REPOS_DIR=File.expand_path(ARGV[0]).freeze
 # Optional argument passed by user when invoking h.
 H_ARG=ARGV[1].freeze
 
@@ -32,7 +32,7 @@ h_dirs = [] # all repos
 unvisited_dirs = [] # repos not in .z
 # Get all dirs from z, including the current pwd which we filter later.
 z_dirs = read_z_dirs(nil).reverse
-Dir.chdir(SHNAV_H_REPOS_DIR) do
+Dir.chdir(COMPNAV_H_REPOS_DIR) do
   Dir.glob('*').select { |f| File.directory? f }.each { |d_host| Dir.chdir(d_host) do
     Dir.glob('*').select { |f| File.directory? f }.each { |d_user| Dir.chdir(d_user) do
       Dir.glob('*').select { |f| File.directory? f }

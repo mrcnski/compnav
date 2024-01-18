@@ -2,7 +2,7 @@
 # directory. Please see README for instructions on hooking this up with cd and fzf.
 
 Z_FILE = File.join(ENV['HOME'], '/.z').freeze
-Z_HEADER = 'shnav-z'.freeze
+Z_HEADER = 'compnav-z'.freeze
 Z_VERSION = '0.0.1'.freeze
 
 def path_with_tilde(abs_path)
