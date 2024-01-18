@@ -1,23 +1,9 @@
-# Since we can't change the current shell directory from a script, this only outputs the new new
-# directory. You can make a function, like:
-#
-# up() { cd $(ruby ~/bin/up.rb $@) }
+# Output all parent directories, which can be forwarded to fzf for selection.
+# See the readme for detailed instructions.
 
-if ARGV.empty?
-  puts '..'
-else
-  cwd = File.dirname(Dir.pwd)
-  arg = ARGV[0].downcase
+cwd = ENV['PWD'] || ::Dir.pwd
 
-  while cwd != '/'
-    base = File.basename(cwd).downcase
-    if base.include? arg
-      puts cwd
-      return
-    end
-    cwd = File.dirname(cwd)
-  end
-
-  # Not found.
-  puts Dir.pwd
+while cwd != '/'
+  cwd = File.dirname(cwd)
+  puts cwd
 end
