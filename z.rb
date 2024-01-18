@@ -1,20 +1,16 @@
-# Since we can't change the current shell directory from a script, this only outputs the new new
-# directory. You can make a function, like:
-#
-# z() { cd $(ruby ~/bin/z.rb $@) }
-#
-# And you should also hook into `cd`:
-#
-# cd() {
-#    builtin cd "$@" || return
-#    [ "$OLDPWD" = "$PWD" ] || z --add $PWD
-#  }
+# Since we can't change the current shell directory from a script, this only outputs the new
+# directory. Please see README for instructions on hooking this up with cd and fzf.
 
 Z_FILE = File.join(ENV['HOME'], '/.z').freeze
 Z_HEADER = 'shnav-z'.freeze
 Z_VERSION = '0.0.1'.freeze
 
-def read_dirs(dir_to_skip)
+def path_with_tilde(abs_path)
+  home = ENV['HOME']
+  abs_path.sub(/#{home}/, "~")
+end
+
+def read_z_dirs(dir_to_skip)
   z_dirs = []
 
   if File.file?(Z_FILE)
@@ -35,9 +31,9 @@ def read_dirs(dir_to_skip)
 end
 
 def print_most_recent_dirs
-  z_dirs = read_dirs Dir.pwd
+  z_dirs = read_z_dirs Dir.pwd
 
-  z_dirs.reverse.each { |z_dir| puts z_dir }
+  z_dirs.reverse.each { |z_dir| puts path_with_tilde(z_dir) }
 end
 
 # Add the passed-in dir to the recent-dirs list as the most recent one (last line of .z).
@@ -45,7 +41,7 @@ def add_dir_to_z_file(dir_to_add)
   # Remove any trailing slashes
   dir_to_add = dir_to_add.chomp('/')
 
-  z_dirs = read_dirs dir_to_add
+  z_dirs = read_z_dirs dir_to_add
 
   File.open(Z_FILE, "w") do |file|
     file.write "#{Z_HEADER} #{Z_VERSION}\n"
@@ -55,22 +51,8 @@ def add_dir_to_z_file(dir_to_add)
   end
 end
 
-# Change to a dir matching the passed-in dir fragment.
-def change_to_dir_from_fragment(dir_fragment)
-  # TODO: If there's only one possible match, just print it and return.
-
-  # TODO: First print dirs that match on the basename.
-
-  # TODO: Then, print dirs that match in any other part of the path.
-end
-
 if ARGV.empty?
   print_most_recent_dirs
 elsif ARGV.length == 2 && ARGV[0] == '--add'
   add_dir_to_z_file ARGV[1]
-elsif ARGV.length == 1
-  change_to_dir_from_fragment ARGV[0]
-else
-  # Invalid usage, don't change the directory.
-  puts Dir.pwd
 end
