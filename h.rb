@@ -55,11 +55,11 @@ if H_ARG.start_with? 'http'
 end
 
 # Assemble list of applicable repo directories.
-# We cross-reference with .z to output the repos with the most recent first.
+# We cross-reference with .z to output the repos with the most recent last.
 h_dirs = [] # all repos
 unvisited_dirs = [] # repos not in .z
 # Get all dirs from z, including the current pwd which we filter later.
-z_dirs = read_z_dirs(nil).reverse
+z_dirs = read_z_dirs(nil)
 Dir.chdir(COMPNAV_H_REPOS_DIR) do
   Dir.glob('*').select { |f| File.directory? f }.each { |d_host| Dir.chdir(d_host) do
     Dir.glob('*').select { |f| File.directory? f }.each { |d_user| Dir.chdir(d_user) do
@@ -80,5 +80,5 @@ end
 # now remove all dirs from z_dirs that are not repos.
 z_dirs = z_dirs.filter { |d| h_dirs.include? d and d != PWD }
 
-puts(z_dirs.map{ |d| path_with_tilde d })
 puts(unvisited_dirs.map { |d| path_with_tilde d })
+puts(z_dirs.map{ |d| path_with_tilde d })

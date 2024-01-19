@@ -28,10 +28,11 @@ def read_z_dirs(dir_to_skip)
   z_dirs
 end
 
+# Prints the directories from .z, with the oldest first.
 def print_most_recent_dirs
   z_dirs = read_z_dirs PWD
 
-  z_dirs.reverse.each { |z_dir| puts path_with_tilde(z_dir) }
+  z_dirs.each { |z_dir| puts path_with_tilde(z_dir) }
 end
 
 # Add the passed-in dir to the recent-dirs list as the most recent one (last line of .z).

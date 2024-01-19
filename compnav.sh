@@ -17,7 +17,7 @@ up() {
 z() {
   # See comments on up().
   dir=$(ruby "$COMPNAV_DIR/z.rb" | \
-    fzf --query "$*" --select-1 --exit-0) &&
+    fzf --tac --query "$*" --select-1 --exit-0) &&
   cd "$(eval echo "$dir")" || return
 }
 
@@ -27,7 +27,7 @@ h() {
   [[ $1 != http* ]] && query_args="$*"
   # See comments on up().
   dir=$(ruby "$COMPNAV_DIR/h.rb" "$COMPNAV_H_REPOS_DIR" "$1" | \
-    fzf --query "$query_args" --select-1 --exit-0) &&
+    fzf --tac --query "$query_args" --select-1 --exit-0) &&
   cd "$(eval echo "$dir")" || return
 }
 
