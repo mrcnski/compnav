@@ -1,14 +1,12 @@
 # Since we can't change the current shell directory from a script, this only outputs the new
 # directory. Please see README for instructions on hooking this up with cd and fzf.
 
+$LOAD_PATH << File.join(File.dirname(__FILE__))
+require 'util'
+
 Z_FILE = File.join(ENV['HOME'], '/.z').freeze
 Z_HEADER = 'compnav-z'.freeze
 Z_VERSION = '0.0.1'.freeze
-
-def path_with_tilde(abs_path)
-  home = ENV['HOME']
-  abs_path.sub(/#{home}/, "~")
-end
 
 def read_z_dirs(dir_to_skip)
   z_dirs = []
@@ -31,7 +29,7 @@ def read_z_dirs(dir_to_skip)
 end
 
 def print_most_recent_dirs
-  z_dirs = read_z_dirs Dir.pwd
+  z_dirs = read_z_dirs PWD
 
   z_dirs.reverse.each { |z_dir| puts path_with_tilde(z_dir) }
 end

@@ -12,6 +12,7 @@
 
 $LOAD_PATH << File.join(File.dirname(__FILE__))
 require 'z'
+require 'util'
 
 exit if ARGV.length == 0
 
@@ -20,11 +21,6 @@ COMPNAV_H_REPOS_DIR=File.expand_path(ARGV[0]).freeze
 H_ARG=ARGV[1].freeze
 
 # TODO: Check if need to clone H_ARG
-
-def path_with_tilde(abs_path)
-  home = ENV['HOME']
-  abs_path.sub(/#{home}/, "~")
-end
 
 # Assemble list of applicable repo directories.
 # We cross-reference with .z to output the repos with the most recent first.
@@ -37,7 +33,7 @@ Dir.chdir(COMPNAV_H_REPOS_DIR) do
     Dir.glob('*').select { |f| File.directory? f }.each { |d_user| Dir.chdir(d_user) do
       Dir.glob('*').select { |f| File.directory? f }
         .map { |d_repo| File.expand_path d_repo }
-        .filter { |d_repo| d_repo != Dir.pwd }
+        .filter { |d_repo| d_repo != PWD }
         .each { |d_repo|
           h_dirs.push d_repo
           if !z_dirs.include? d_repo
@@ -50,7 +46,7 @@ end
 
 # unvisited_dirs has all repos that are not in .z,
 # now remove all dirs from z_dirs that are not repos.
-z_dirs = z_dirs.filter { |d| h_dirs.include? d and d != Dir.pwd }
+z_dirs = z_dirs.filter { |d| h_dirs.include? d and d != PWD }
 
 puts(z_dirs.map{ |d| path_with_tilde d })
 puts(unvisited_dirs.map { |d| path_with_tilde d })
