@@ -7,8 +7,10 @@
 # ~/Repos/github.com/mrcnski/compnav
 #
 # This works by assembling a list of all applicable directories and passing them on (ideally to
-# fzf). If the passed-in argument is a link to a repo, h.rb first clones the repo into the h
-# directory structure and then passes on the directory.
+# fzf).
+#
+# If the passed-in argument is a link to a repo, h.rb first clones the repo into the h directory
+# structure and then passes on the directory.
 
 $LOAD_PATH << File.join(File.dirname(__FILE__))
 require 'z'
@@ -20,7 +22,37 @@ COMPNAV_H_REPOS_DIR=File.expand_path(ARGV[0]).freeze
 # Optional argument passed by user when invoking h.
 H_ARG=ARGV[1].freeze
 
-# TODO: Check if need to clone H_ARG
+# Check if H_ARG is a repo link that we should clone into h directory structure.
+if H_ARG.start_with? 'http'  
+  without_protocol = H_ARG.split('://')[1]
+  host, user, repo = without_protocol.split('/')
+  if host.include? 'www.'
+    host = host.split('www.')[1]
+  end
+  
+  # Create host directory if it doesn't exist.
+  host_dir = File.join(COMPNAV_H_REPOS_DIR, host)
+  if !Dir.exist? host_dir
+    Dir.mkdir host_dir
+  end
+  
+  # Create user directory if it doesn't exist.
+  user_dir = File.join(host_dir, user)
+  if !Dir.exist? user_dir
+    Dir.mkdir user_dir
+  end
+  
+  # Clone repo into user directory if it doesn't exist.
+  repo_dir = File.join(user_dir, repo)
+  if !Dir.exist? repo_dir
+    Dir.chdir(user_dir) do
+      system("git clone #{H_ARG}")
+    end
+  end
+  
+  puts path_with_tilde repo_dir
+  exit
+end
 
 # Assemble list of applicable repo directories.
 # We cross-reference with .z to output the repos with the most recent first.

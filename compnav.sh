@@ -6,10 +6,10 @@ up() {
   # Start fzf with any given arguments as the query.
   # Don't show the interactive fzf finder if there's 1 or 0 matches.
 
-  # --bind 'load:accept' accepts the first match for you when fzf finishes listing.
+  # --sync --bind 'start:accept' accepts the first match for you when fzf finishes listing.
   # Remove if you don't want this behavior.
   dir=$(ruby "$COMPNAV_DIR/up.rb" | \
-    fzf --query "$*" --select-1 --exit-0 --bind 'load:accept') &&
+    fzf --query "$*" --select-1 --exit-0 --sync --bind 'start:accept') &&
   # Use eval to expand home directory if present.
   cd "$(eval echo "$dir")" || return; 
 }
