@@ -6,21 +6,19 @@
 #
 # ~/Repos/github.com/mrcnski/compnav
 #
-# This works by assembling a list of all applicable directories and passing them on (ideally to
-# fzf).
+# This works by assembling a list of all applicable directories and passing them on to fzf.
 #
 # If the passed-in argument is a link to a repo, h.rb first clones the repo into the h directory
-# structure and then passes on the directory.
+# structure and then passes on the single directory.
 
 $LOAD_PATH << File.join(File.dirname(__FILE__))
+REQUIRING_Z = true
 require 'z'
 require 'util'
 
-exit if ARGV.length == 0
-
-COMPNAV_H_REPOS_DIR=File.expand_path(ARGV[0]).freeze
-# Optional argument passed by user when invoking h.
-H_ARG=ARGV[1].freeze
+COMPNAV_H_REPOS_DIR=ENV['COMPNAV_H_REPOS_DIR'].freeze
+# First argument passed by user when invoking h, may be a repo link.
+H_ARG=ARGV[0].freeze
 
 # Check if H_ARG is a repo link that we should clone into h directory structure.
 if H_ARG.start_with? 'http'  
@@ -56,10 +54,10 @@ end
 
 # Assemble list of applicable repo directories.
 # We cross-reference with .z to output the repos with the most recent last.
-h_dirs = [] # all repos
+h_dirs = [] # all repos on disk
 unvisited_dirs = [] # repos not in .z
 # Get all dirs from z, including the current pwd which we filter later.
-z_dirs = read_z_dirs(nil)
+z_dirs = read_z_dirs nil
 Dir.chdir(COMPNAV_H_REPOS_DIR) do
   Dir.glob('*').select { |f| File.directory? f }.each { |d_host| Dir.chdir(d_host) do
     Dir.glob('*').select { |f| File.directory? f }.each { |d_user| Dir.chdir(d_user) do
@@ -80,5 +78,6 @@ end
 # now remove all dirs from z_dirs that are not repos.
 z_dirs = z_dirs.filter { |d| h_dirs.include? d and d != PWD }
 
-puts(unvisited_dirs.map { |d| path_with_tilde d })
-puts(z_dirs.map{ |d| path_with_tilde d })
+fzf_input = unvisited_dirs.concat(z_dirs).map { |d| path_with_tilde d }.join("\n")
+
+pipe_to_fzf_and_print(fzf_input, true, 'COMPNAV_FZF_H_OPTS')

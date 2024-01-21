@@ -1,5 +1,5 @@
 # Since we can't change the current shell directory from a script, this only outputs the new
-# directory. Please see README for instructions on hooking this up with cd and fzf.
+# directory. Please see README for instructions.
 
 $LOAD_PATH << File.join(File.dirname(__FILE__))
 require 'util'
@@ -28,17 +28,13 @@ def read_z_dirs(dir_to_skip)
   z_dirs
 end
 
-# Prints the directories from .z, with the oldest first.
-def print_most_recent_dirs
-  z_dirs = read_z_dirs PWD
+return if defined? REQUIRING_Z
 
-  z_dirs.each { |z_dir| puts path_with_tilde(z_dir) }
-end
+if ARGV.length == 2 && ARGV[0] == '--add'
+  # Add the passed-in dir to the recent-dirs list as the most recent one (last line of .z).
 
-# Add the passed-in dir to the recent-dirs list as the most recent one (last line of .z).
-def add_dir_to_z_file(dir_to_add)
   # Remove any trailing slashes
-  dir_to_add = dir_to_add.chomp('/')
+  dir_to_add = ARGV[1].chomp('/')
 
   z_dirs = read_z_dirs dir_to_add
 
@@ -48,10 +44,10 @@ def add_dir_to_z_file(dir_to_add)
     z_dirs.each { |z_dir| file.write "#{z_dir}\n" }
     file.write dir_to_add
   end
+
+  exit
 end
 
-if ARGV.empty?
-  print_most_recent_dirs
-elsif ARGV.length == 2 && ARGV[0] == '--add'
-  add_dir_to_z_file ARGV[1]
-end
+z_dirs = read_z_dirs(PWD).map { |z_dir| path_with_tilde(z_dir) }.join("\n")
+
+pipe_to_fzf_and_print(z_dirs, true, 'COMPNAV_FZF_Z_OPTS')
