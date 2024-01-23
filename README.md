@@ -1,4 +1,4 @@
-# compnav - Complete Shell Navigation
+# Complete Shell Navigation: better `up`, `z`, and `h`
 
 Easily navigate to parent directories, recent directories, repos, and more.
 
@@ -16,10 +16,10 @@ When navigating in the shell, 99% of the time I want to do one of the following:
 - [x] Jump to a repo
   - Provided by compnav's `h` function (can be renamed to whatever you want).
 - [ ] Go down to a child subdir
-  - Provided by fzf's Alt-C (but see improved config below that uses
+  - Already provided by fzf's Alt-C (but see improved config below that uses
     [`bfs`](https://github.com/tavianator/bfs)).
 - [ ] Easily select from command history
-  - Provided by fzf's Ctrl-R
+  - Already provided by fzf's Ctrl-R
 
 ## Installation / Setup
 
@@ -45,15 +45,16 @@ export COMPNAV_H_REPOS_DIR="$HOME/Repos"
 [ -f "$COMPNAV_DIR/compnav.sh" ] && source "$COMPNAV_DIR/compnav.sh"
 ```
 
-3. **NOTE:** make sure you are not loading the interactive shell startup scripts (the ones ending
-   with `rc`) from `.profile`! Otherwise, anytime `cd` is invoked it will update the
+3. **NOTE:** make sure that you are not loading the interactive shell startup scripts (the ones
+   ending with `rc`) from `.profile`! Otherwise, anytime `cd` is invoked it will update the
    recent-directories list, even if it's invoked from non-interactive scripts.
 
 4. Open a new shell session; you can now start using `up`, `z`, and `h`!
 
 ### Optional Configuration
 
-You can optionally pass additional parameters to `fzf`:
+<details>
+You can optionally pass additional parameters to <code>fzf</code>:
 
 ```sh
 # OPTIONAL:
@@ -68,22 +69,24 @@ export COMPNAV_FZF_OPTS="
 # export COMPNAV_FZF_Z_OPTS="--select-1 --exit-0 --sync --bind 'start:accept'"
 ```
 
-These work in addition to the standard `FZF_DEFAULT_OPTS`, which is always applied first whenever
-`fzf` is invoked.
+These work in addition to the standard <code>FZF_DEFAULT_OPTS</code>, which is always applied first
+whenever <code>fzf</code> is invoked.
+</details>
 
 ### `fzf`: find child subdirectory (Alt-C) with `bfs`
 
-First make sure that you have [`bfs`](https://github.com/tavianator/bfs) installed, and consider
-[sponsoring](https://github.com/sponsors/tavianator) them!
+<details>
+First make sure that you have <a href="https://github.com/tavianator/bfs"><code>bfs</code></a> installed, and consider
+<a href="https://github.com/sponsors/tavianator">sponsoring</a> them!
 
-Next add this to `.bashrc`/`.zshrc`:
+Next add this to .bashrc/.zshrc:
 
 ```sh
 export FZF_ALT_C_COMMAND="bfs -color -not -name '.' -nohidden -type d -printf '%P\n' 2>/dev/null"
 ```
 
 And optionally consider setting something like this for a nice preview of directories (on Mac,
-requires [installing `tree`](https://superuser.com/a/359727)):
+requires <a href="https://superuser.com/a/359727">installing <code>tree</code></a>):
 
 ```sh
 # Print tree structure in the preview window
@@ -92,9 +95,31 @@ export FZF_ALT_C_OPTS="
   --preview='tree -C {} | head -n 50'
   --preview-window=border-double,bottom"
 ```
+</details>
 
 ### Full Example Config
 
-TODO
+For a full example config, see [.zsh-example](.zsh-example)!
 
 ## Improvements over existing tools
+
+Why'd I make this? A few reasons:
+
+- One day `bd` (which I had aliased to `up`) simply stopped working. But when it did work, it often
+  failed in cases involving numbers and dashes.
+- The existing `z` works based on "frecency", which offends me on a linguistic and technical level.
+  It often just doesn't do what you want - instead of simply jumping to the most recent directory,
+  which is easy to reason about, it may go to some other directory on a project you're no longer
+  working on. compnav only considers "recency", which is predictable, more often what you want, and
+  results in much simpler code.
+- The existing `z` just jumps to the first result, not giving the user a chance to resolve
+  ambiguity. `compnav` integrates with `fzf` in true Unix fashion, allowing a separate tool to do
+  what it does best and take on the job of a selection interface. (If you want the behavior of
+  always accepting the first result, that is also possible with some easy configuration.)
+- compnav's `h` takes advantage of z's recent-directories index to show projects in recency order.
+- The existing tools are mostly written in bash gobbledygook, and are therefore hard to understand
+  and change. compnav uses the bare minimum of bash.
+
+## License
+
+TODO
