@@ -1,6 +1,8 @@
 # Compnav setup. See readme for instructions.
 #
 # Source this only from interactive shell startup scripts (like .bashrc or zshrc).
+#
+# As much logic as possible is in the Ruby scripts to minimize the amount of bash gobbledygook.
 
 up() { 
   # Pass COMPNAV_FZF_UP_OPTS to fzf if set, or use the default set of options.
