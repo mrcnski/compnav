@@ -23,6 +23,8 @@ When navigating in the shell, 99% of the time I want to do one of the following:
 - [ ] Easily select from **command history**
   - Already provided by `fzf`'s `Ctrl-R`
 
+![h Demo](demo-h.gif)
+
 ## Installation / Setup
 
 ### Prerequisites
