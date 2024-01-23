@@ -3,23 +3,25 @@
 Easily navigate to parent directories, recent directories, repos, and more.
 
 This project aims to provide improved versions of utilities like `up`, `bd`, `z`, `autojump`, and
-`h`, with [`fzf`](https://github.com/junegunn/fzf/) as the selection engine.
+`h`, with [`fzf`](https://github.com/junegunn/fzf/) as the selection engine/interface.
+
+![Demo](demo.gif)
 
 ## Use cases
 
 When navigating in the shell, 99% of the time I want to do one of the following:
 
-- [x] Go up to a parent directory
+- [x] Go up to a **parent directory**
   - Provided by compnav's `up` function (can be renamed to whatever you want).
-- [x] Jump to a recent directory
+- [x] Jump to a **recent directory**
   - Provided by compnav's `z` function (can be renamed to whatever you want).
-- [x] Jump to a repo
+- [x] Jump to a **repo**
   - Provided by compnav's `h` function (can be renamed to whatever you want).
-- [ ] Go down to a child subdir
-  - Already provided by fzf's Alt-C (but see improved config below that uses
+- [ ] Go down to a **child subdir**
+  - Already provided by `fzf`'s `Alt-C` (but see improved config below that uses
     [`bfs`](https://github.com/tavianator/bfs)).
-- [ ] Easily select from command history
-  - Already provided by fzf's Ctrl-R
+- [ ] Easily select from **command history**
+  - Already provided by `fzf`'s `Ctrl-R`
 
 ## Installation / Setup
 
@@ -35,7 +37,7 @@ You will need:
 
 1. Clone this repo somewhere, like `~/bin`.
 
-2. Add the following to `.bashrc`/`.zshrc`:
+2. Add the following to `.bashrc`/`.zshrc`, setting the required variables appropriately:
 
 ```sh
 # REQUIRED:
@@ -79,7 +81,8 @@ whenever <code>fzf</code> is invoked.
 First make sure that you have <a href="https://github.com/tavianator/bfs"><code>bfs</code></a> installed, and consider
 <a href="https://github.com/sponsors/tavianator">sponsoring ❤️</a> them!
 
-Next add this to .bashrc/.zshrc:
+Next add this to .bashrc/.zshrc (note that <code>-color</code> requires <code>--ansi</code> in
+<code>FZF_DEFAULT_OPTS</code>):
 
 ```sh
 export FZF_ALT_C_COMMAND="bfs -color -not -name '.' -nohidden -type d -printf '%P\n' 2>/dev/null"
