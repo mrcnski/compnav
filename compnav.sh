@@ -9,7 +9,7 @@ up() {
   # 
   # --select-1 --exit-0: Don't show the interactive fzf finder if there's 1 or 0 matches.
   # --sync --bind 'start:accept': Accepts the first match for you when fzf finishes listing.
-  dir=$(COMPNAV_FZF_UP_OPTS="${COMPNAV_FZF_UP_OPTS:---select-1 --exit-0 --sync --bind 'start:accept'}" \
+  dir=$(COMPNAV_FZF_UP_OPTS="${COMPNAV_FZF_UP_OPTS:---select-1 --exit-0 --sync --bind 'start:accept' --height '0%'}" \
     ruby "$COMPNAV_DIR/up.rb" "$*") &&
     # Use eval to expand home directory if present.
     cd "$(eval echo "$dir")" || return; 
