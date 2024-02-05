@@ -16,9 +16,9 @@ REQUIRING_Z = true
 require 'z'
 require 'util'
 
-COMPNAV_H_REPOS_DIR=ENV['COMPNAV_H_REPOS_DIR'].freeze
+COMPNAV_H_REPOS_DIR = (File.expand_path ENV['COMPNAV_H_REPOS_DIR']).freeze
 # First argument passed by user when invoking h, may be a repo link.
-H_ARG=ARGV[0].freeze
+H_ARG = ARGV[0].freeze
 
 # Check if H_ARG is a repo link that we should clone into h directory structure.
 if H_ARG.start_with? 'http'  
@@ -59,15 +59,18 @@ unvisited_dirs = [] # repos not in .z
 # Get all dirs from z, including the current pwd which we filter later.
 z_dirs = read_z_dirs nil
 Dir.chdir(COMPNAV_H_REPOS_DIR) do
-  Dir.glob('*').select { |f| File.directory? f }.each { |d_host| Dir.chdir(d_host) do
-    Dir.glob('*').select { |f| File.directory? f }.each { |d_user| Dir.chdir(d_user) do
+  Dir.glob('*').select { |f| File.directory? f }.each { |dir_host| Dir.chdir(dir_host) do
+    full_dir_host = File.join(COMPNAV_H_REPOS_DIR, dir_host)
+    Dir.glob('*').select { |f| File.directory? f }.each { |dir_user| Dir.chdir(dir_user) do
+      full_dir_user = File.join(full_dir_host, dir_user)
+      
       Dir.glob('*').select { |f| File.directory? f }
-        .map { |d_repo| File.expand_path d_repo }
-        .filter { |d_repo| d_repo != PWD }
-        .each { |d_repo|
-          h_dirs.push d_repo
-          if !z_dirs.include? d_repo
-            unvisited_dirs.push d_repo
+        .map { |dir_repo| File.join(full_dir_user, dir_repo) }
+        .filter { |full_dir_repo| full_dir_repo != PWD }
+        .each { |full_dir_repo|
+          h_dirs.push full_dir_repo
+          if !z_dirs.include? full_dir_repo
+            unvisited_dirs.push full_dir_repo
           end
         }
     end }
