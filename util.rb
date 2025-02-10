@@ -9,7 +9,8 @@ end
 
 def pipe_to_fzf_and_print(fzf_input, reverse, env_var)
   tac = if reverse; "--tac" else "" end
-  query = ARGV.join(' ')
+  # Ignore --fzf command (must be first arg).
+  query = ARGV[1..-1].join(' ')
   compnav_fzf_opts = (ENV['COMPNAV_FZF_OPTS'] || "").delete("\n")
   compnav_fzf_cmd_opts = (ENV[env_var] || "").delete("\n")
   # --query: Start fzf with any given arguments as the query.

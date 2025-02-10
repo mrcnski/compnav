@@ -12,4 +12,10 @@ while cwd != '/'
   parent_dirs.push cwd
 end
 
-pipe_to_fzf_and_print(parent_dirs.join("\n"), false, 'COMPNAV_FZF_UP_OPTS')
+parent_dirs = parent_dirs.join("\n")
+
+if ARGV.length >= 1 && ARGV[0] == '--fzf'
+  pipe_to_fzf_and_print(parent_dirs, false, 'COMPNAV_FZF_UP_OPTS')
+else
+  puts parent_dirs
+end

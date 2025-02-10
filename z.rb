@@ -50,4 +50,8 @@ end
 
 z_dirs = read_z_dirs(PWD).map { |z_dir| path_with_tilde(z_dir) }.join("\n")
 
-pipe_to_fzf_and_print(z_dirs, true, 'COMPNAV_FZF_Z_OPTS')
+if ARGV.length >= 1 && ARGV[0] == '--fzf'
+  pipe_to_fzf_and_print(z_dirs, true, 'COMPNAV_FZF_Z_OPTS')
+else
+  puts z_dirs
+end

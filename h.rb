@@ -21,25 +21,25 @@ COMPNAV_H_REPOS_DIR = (File.expand_path ENV['COMPNAV_H_REPOS_DIR']).freeze
 H_ARG = ARGV[0].freeze
 
 # Check if H_ARG is a repo link that we should clone into h directory structure.
-if H_ARG.start_with? 'http'  
+if H_ARG.start_with? 'http'
   without_protocol = H_ARG.split('://')[1]
   host, user, repo = without_protocol.split('/')
   if host.include? 'www.'
     host = host.split('www.')[1]
   end
-  
+
   # Create host directory if it doesn't exist.
   host_dir = File.join(COMPNAV_H_REPOS_DIR, host)
   if !Dir.exist? host_dir
     Dir.mkdir host_dir
   end
-  
+
   # Create user directory if it doesn't exist.
   user_dir = File.join(host_dir, user)
   if !Dir.exist? user_dir
     Dir.mkdir user_dir
   end
-  
+
   # Clone repo into user directory if it doesn't exist.
   repo_dir = File.join(user_dir, repo)
   if !Dir.exist? repo_dir
@@ -47,7 +47,7 @@ if H_ARG.start_with? 'http'
       system("git clone #{H_ARG}")
     end
   end
-  
+
   puts path_with_tilde repo_dir
   exit
 end
@@ -63,7 +63,7 @@ Dir.chdir(COMPNAV_H_REPOS_DIR) do
     full_dir_host = File.join(COMPNAV_H_REPOS_DIR, dir_host)
     Dir.glob('*').select { |f| File.directory? f }.each { |dir_user| Dir.chdir(dir_user) do
       full_dir_user = File.join(full_dir_host, dir_user)
-      
+
       Dir.glob('*').select { |f| File.directory? f }
         .map { |dir_repo| File.join(full_dir_user, dir_repo) }
         .filter { |full_dir_repo| full_dir_repo != PWD }
@@ -81,6 +81,10 @@ end
 # now remove all dirs from z_dirs that are not repos.
 z_dirs = z_dirs.filter { |d| h_dirs.include? d and d != PWD }
 
-fzf_input = unvisited_dirs.concat(z_dirs).map { |d| path_with_tilde d }.join("\n")
+h_dirs = unvisited_dirs.concat(z_dirs).map { |d| path_with_tilde d }.join("\n")
 
-pipe_to_fzf_and_print(fzf_input, true, 'COMPNAV_FZF_H_OPTS')
+if ARGV.length >= 1 && ARGV[0] == '--fzf'
+  pipe_to_fzf_and_print(h_dirs, true, 'COMPNAV_FZF_H_OPTS')
+else
+  puts h_dirs
+end
